@@ -4,37 +4,39 @@ import LayOut from "../../Components/LayOut/Layout";
 import { db } from "../../Util/firebase";
 import { DataContext } from "../../Components/DataProvider/DataProvider";
 import ProductCard from "../../Components/Product/ProductCard";
+import { doc, setDoc, onSnapshot, collection } from "firebase/firestore";
 
-function Order() {
+const Order = () => {
   const [{ user }, dispatch] = useContext(DataContext);
   const [orders, setOrders] = useState([]);
-
   useEffect(() => {
     if (user) {
-      console.log(db);
-      db.collection("users")
-        .doc(user.uid)
-        .collection("orders")
-        .orderBy("created", "desc")
-        .onSnapshot((snapshot) => {
-          console.log(snapshot);
+      const unsubscribe = onSnapshot(
+        collection(db, "users", user.uid, "orders"),
+        { orderBy: ["created", "desc"] },
+        (snapshot) => {
           setOrders(
             snapshot.docs.map((doc) => ({
               id: doc.id,
               data: doc.data(),
             }))
           );
-        });
+        }
+      );
+
+      return unsubscribe;
     } else {
       setOrders([]);
     }
-  }, []);
+  }, [user]);
   return (
     <LayOut>
       <section className={classes.container}>
         <div className={classes.order__container}>
           <h2>Your Orders</h2>
-          {orders?.length == 0 && <div>You have no orders</div>}
+          {orders?.length == 0 && (
+            <div style={{ padding: "20px" }}>You dont have ordets</div>
+          )}
           <div>
             {orders?.map((eachOrder, i) => {
               return (
@@ -58,6 +60,6 @@ function Order() {
       </section>
     </LayOut>
   );
-}
+};
 
 export default Order;

@@ -10,3 +10,12 @@
   border-bottom: 2px solid var(--primary-shade);
   padding: 20px;
 }
+.order__container p {
+  padding: 12px;
+}
+.order__container img {
+  width: 100px !important;
+}
+.order__container div {
+  height: auto !important;
+}
